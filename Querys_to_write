@@ -110,12 +110,111 @@ INSERT INTO Package VALUES(5, 1, 'Undeclared', 100.0, 5, 1);
 Create all select queries as VIEW Object and name it as v1...vn
 
 Q1) Display employess who name is "Turanga Leela" along with its shipment dertails.
+ans-->CREATE VIEW v1 as SELECT a.name,b.* FROM shipment AS b INNER JOIN employee AS a on a.employeeid = b.manager WHERE a.name = 'Turanga Leela';
+        select * from v1;
++---------------+-------------+------------+---------+--------+
+| name          | shipment_id | date       | manager | planet |
++---------------+-------------+------------+---------+--------+
+| Turanga Leela |           3 | 3004-05-11 |       2 |      3 |
+| Turanga Leela |           4 | 3004-05-11 |       2 |      4 |
++---------------+-------------+------------+---------+--------+
 Q2) List those packages which are intented for client whose ids are 1,5 or 6
+ans--> CREATE VIEW v2 as SELECT b.* FROM package as b INNER JOIN client ON client.accountnumber = b.recipient WHERE b.recipient IN(1,5,6);
+    select * from v2;
++----------+---------------+------------+--------+--------+-----------+
+| shipment | packagenumber | contents   | weight | sender | recipient |
++----------+---------------+------------+--------+--------+-----------+
+|        3 |             2 | Undeclared |      3 |      5 |         1 |
+|        4 |             1 | Undeclared |      5 |      4 |         5 |
+|        5 |             1 | Undeclared |    100 |      5 |         1 |
++----------+---------------+------------+--------+--------+-----------+
 Q3) Display name of emnployee and plant which are cleared
+ANS--> CREATE VIEW Q3 as SELECT a.name AS Employee, c.name AS Planet FROM employee AS a INNER JOIN has_clearance AS b ON a.employeeID = b.employee INNER JOIN planet AS c ON c.planetID = b.planet;
+    SELECT * from  Q3;
++--------------------------+------------------+
+| Employee                 | Planet           |
++--------------------------+------------------+
+| Phillip J. Fry           | Omicron Persei 8 |
+| Phillip J. Fry           | Decapod X        |
+| Turanga Leela            | Mars             |
+| Turanga Leela            | Omega III        |
+| Bender Bending Rodriguez | Tarantulon VI    |
+| Bender Bending Rodriguez | Cannibalon       |
+| Hubert J. Farnsworth     | DogDoo VII       |
++--------------------------+------------------+
+7 rows in set (0.00 sec)
 Q4) Display details of shipment data (Month, Day YYYY), sender and receiver name whose package weight is between 5 and 10
 Q5) Give details of those shipments which are currently processed at plant name "Mars" or "Amazonia"
 Q6) List client names whose pakages are "Undeclared"
+ ANS--> CREATE VIEW Q6 as SELECT DISTINCT a.name FROM client as a INNER JOIN package as b on b.sender = a.accountnumber INNER JOIN package as c on c.recipient = a.accountnumber where c.contents = 'undeclared';
+        SELECT * from  Q6;
++-----------------+
+| name            |
++-----------------+
+| Al Gore's Head  |
+| Barbados Slim   |
+| Ogden Wernstrom |
+| Zapp Brannigan  |
+| Leo Wong        |
++-----------------+
+5 rows in set (0.00 sec)
 Q7) Display those employees details containing salary format as $2,700.00
+ANS--> CREATE VIEW Q7 AS SELECT CONCAT('$', FORMAT(salary,2)) AS Salary from employee;
+    SELECT * from  Q7;
++------------+
+| Salary     |
++------------+
+| $7,500.00  |
+| $10,000.00 |
+| $7,500.00  |
+| $20,000.00 |
+| $25.00     |
+| $5,000.00  |
+| $10,000.00 |
+| $5,000.00  |
++------------+
+8 rows in set (0.00 sec)
+
 Q8) Write query to Add remarks of those employee which are never remarked before.
+ ans-->UPDATE employee SET remark ="successfull" where remark is NULL;
+   +------------+--------------------------+--------------+--------+--------------------------------+
+| employeeid | name                     | position     | salary | remark                         |
++------------+--------------------------+--------------+--------+--------------------------------+
+|          1 | Phillip J. Fry           | Delivery boy |   7500 | Not to be confused with the Ph |
+|          2 | Turanga Leela            | Captain      |  10000 | successfull                    |
+|          3 | Bender Bending Rodriguez | Robot        |   7500 | successfull                    |
+|          4 | Hubert J. Farnsworth     | CEO          |  20000 | successfull                    |
+|          5 | John A. Zoidberg         | Physician    |     25 | successfull                    |
+|          6 | Amy Wong                 | Intern       |   5000 | successfull                    |
+|          7 | Hermes Conrad            | Bureaucrat   |  10000 | successfull                    |
+|          8 | Scruffy Scruffington     | Janitor      |   5000 | successfull                    |
++------------+--------------------------+--------------+--------+--------------------------------+
+8 rows in set (0.00 sec)
+ 
 Q9) Display employee details in following format "Phillip J. Fry is Delivery boy and earns $7,500.00/month"
+  ans-->  CREATE VIEW v9 as SELECT CONCAT(name,' is ',position,' earns $',salary,'/month') as EmployeeDetail FROM employee;
+           SELECT * from  v9;
++-----------------------------------------------------+
+| EmployeeDetail                                      |
++-----------------------------------------------------+
+| Phillip J. Fry is Delivery boy earns $7500/month    |
+| Turanga Leela is Captain earns $10000/month         |
+| Bender Bending Rodriguez is Robot earns $7500/month |
+| Hubert J. Farnsworth is CEO earns $20000/month      |
+| John A. Zoidberg is Physician earns $25/month       |
+| Amy Wong is Intern earns $5000/month                |
+| Hermes Conrad is Bureaucrat earns $10000/month      |
+| Scruffy Scruffington is Janitor earns $5000/month   |
++-----------------------------------------------------+
 Q10) Update shipment date to current date for all data having NULL value
+  ans-->UPDATE  shipment SET date="3004-05-11";
+ 
++-------------+------------+---------+--------+
+| shipment_id | date       | manager | planet |
++-------------+------------+---------+--------+
+|           1 | 3004-05-11 |       1 |      1 |
+|           2 | 3004-05-11 |       1 |      2 |
+|           3 | 3004-05-11 |       2 |      3 |
+|           4 | 3004-05-11 |       2 |      4 |
+|           5 | 3004-05-11 |       7 |      5 |
++-------------+------------+---------+--------+
